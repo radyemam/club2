@@ -1,0 +1,142 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1>تحضير المشتركين بالتاريخ</h1>
+    <div class="d-flex justify-content-between mb-3">
+        <button class="btn btn-primary" onclick="exportAttendanceToExcel()">تصدير إلى Excel</button>
+    </div>
+
+    <div id="filterForm" style="background-color: #E9F7FD; padding: 15px; border-radius: 5px;">
+        <form id="searchForm" method="get" action="{% url 'attendance_by_date' %}">
+            <div class="form-row">
+                <div class="form-group col-md-3">
+                    <label for="from_date">التاريخ</label>
+                    <input type="date" class="form-control" id="from_date" name="from_date" value="{{ selected_date|default_if_none:'' }}">
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary">بحث</button>
+        </form>
+    </div>
+
+    {% if attendees %}
+    <table class="table table-striped mt-3">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>اسم اللاعب</th>
+                <th>اللعبة</th>
+                <th>الفرع</th>
+                <th>عدد الحصص</th>
+                <th>أيام الحضور</th>
+                <th>الحالة</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for attendee in attendees %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ attendee.name }}</td>
+                <td>{{ attendee.activity }}</td>
+                <td>{{ attendee.branch }}</td>
+                <td>{{ attendee.number_of_sessions }}</td>
+                <td>{{ attendee.attendance_days }}</td>
+                <td>
+                    <select class="form-control status-select" data-subscription-number="{{ attendee.subscription_number }}">
+                        <option value="X" {% if attendee.status == 'X' %}selected{% endif %}>X</option>
+                        <option value="حضور" {% if attendee.status == 'حضور' %}selected{% endif %}>حضور</option>
+                    </select>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+    <button class="btn btn-success" onclick="saveAttendance()">حفظ</button>
+</div>
+
+<script>
+function exportAttendanceToExcel() {
+    var attendees = [];
+    var rows = document.querySelectorAll('tbody tr');
+    rows.forEach(function(row) {
+        var cells = row.querySelectorAll('td');
+        var attendee = {
+            '#': cells[0].innerText,
+            'اسم اللاعب': cells[1].innerText,
+            'اللعبة': cells[2].innerText,
+            'الفرع': cells[3].innerText,
+            'عدد الحصص': cells[4].innerText,
+            'أيام الحضور': cells[5].innerText,
+            'الحالة': row.querySelector('.status-select').value,
+            'subscription_number': row.querySelector('.status-select').dataset.subscriptionNumber
+        };
+        attendees.push(attendee);
+    });
+
+    var data = {
+        attendees: attendees,
+        selected_date: document.getElementById('from_date').value
+    };
+
+    fetch("{% url 'export_attendance_by_date_to_excel' %}", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": "{{ csrf_token }}",
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.blob())
+    .then(blob => {
+        var link = document.createElement('a');
+        link.href = window.URL.createObjectURL(blob);
+        link.download = "attendance_by_date.xlsx";
+        link.click();
+    })
+    .catch(error => console.error('Error:', error));
+}
+
+function saveAttendance() {
+    var attendees = [];
+    var rows = document.querySelectorAll('tbody tr');
+    rows.forEach(function(row) {
+        var cells = row.querySelectorAll('td');
+        var attendee = {
+            '#': cells[0].innerText,
+            'اسم اللاعب': cells[1].innerText,
+            'اللعبة': cells[2].innerText,
+            'الفرع': cells[3].innerText,
+            'عدد الحصص': cells[4].innerText,
+            'أيام الحضور': cells[5].innerText,
+            'num_of_day_attendance': parseInt(cells[5].innerText) + (row.querySelector('.status-select').value === 'حضور' ? 1 : 0),
+            'الحالة': row.querySelector('.status-select').value,
+            'subscription_number': row.querySelector('.status-select').dataset.subscriptionNumber
+        };
+        attendees.push(attendee);
+    });
+
+    var data = {
+        attendees: attendees,
+        selected_date: document.getElementById('from_date').value
+    };
+
+    fetch("{% url 'save_attendance_by_date' %}", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": "{{ csrf_token }}",
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => {
+        if (response.ok) {
+            alert("تم حفظ الحضور بنجاح");
+        } else {
+            alert("حدث خطأ أثناء حفظ الحضور");
+        }
+    })
+    .catch(error => console.error('Error:', error));
+}
+</script>
+{% endblock %}

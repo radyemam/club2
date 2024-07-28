@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1>قائمة الحضور</h1>
+    <div class="d-flex justify-content-between mb-3">
+        <button class="btn btn-primary" onclick="exportPrintAttendanceToExcel()">تصدير إلى Excel</button>
+    </div>
+
+    <!-- فورم الفلتر -->
+    <div id="filterForm" style="background-color: #E9F7FD; padding: 15px; border-radius: 5px;">
+        <form id="searchForm" method="get" action="{% url 'attendance_print' %}">
+            <div class="form-row">
+                <div class="form-group col-md-3">
+                    <label for="name">اسم اللاعب</label>
+                    <input type="text" class="form-control" id="name" name="name" value="{{ name|default_if_none:'' }}">
+                </div>
+                <div class="form-group col-md-3">
+                    <label for="activity">اللعبة</label>
+                    <select class="form-control" id="activity" name="activity">
+                        <option value="">اختر النشاط</option>
+                        <option value="إيجار مسبح" {% if activity == 'إيجار مسبح' %}selected{% endif %}>إيجار مسبح</option>
+                        <option value="إيجار ملعب سلة" {% if activity == 'إيجار ملعب سلة' %}selected{% endif %}>إيجار ملعب سلة</option>
+                        <option value="إيجار ملعب طائرة" {% if activity == 'إيجار ملعب طائرة' %}selected{% endif %}>إيجار ملعب طائرة</option>
+                        <option value="إيجار ملعب كرة القدم" {% if activity == 'إيجار ملعب كرة القدم' %}selected{% endif %}>إيجار ملعب كرة القدم</option>
+                        <option value="نشطة ملابس رياضية" {% if activity == 'نشطة ملابس رياضية' %}selected{% endif %}>نشطة ملابس رياضية</option>
+                        <option value="طقم ملابس مفرد لون أزرق" {% if activity == 'طقم ملابس مفرد لون أزرق' %}selected{% endif %}>طقم ملابس مفرد لون أزرق</option>
+                        <option value="طقم ملابس مفرد لون أصفر" {% if activity == 'طقم ملابس مفرد لون أصفر' %}selected{% endif %}>طقم ملابس مفرد لون أصفر</option>
+                        <option value="طقم ملابس مفرد لون موف" {% if activity == 'طقم ملابس مفرد لون موف' %}selected{% endif %}>طقم ملابس مفرد لون موف</option>
+                        <option value="لعبة الإسكواش" {% if activity == 'لعبة الإسكواش' %}selected{% endif %}>لعبة الإسكواش</option>
+                        <option value="لعبة التايكوندو" {% if activity == 'لعبة التايكوندو' %}selected{% endif %}>لعبة التايكوندو</option>
+                        <option value="لعبة التنس الأرضي" {% if activity == 'لعبة التنس الأرضي' %}selected{% endif %}>لعبة التنس الأرضي</option>
+                        <option value="لعبة الجمباز" {% if activity == 'لعبة الجمباز' %}selected{% endif %}>لعبة الجمباز</option>
+                        <option value="لعبة السباحة" {% if activity == 'لعبة السباحة' %}selected{% endif %}>لعبة السباحة</option>
+                        <option value="لعبة الكاراتيه" {% if activity == 'لعبة الكاراتيه' %}selected{% endif %}>لعبة الكاراتيه</option>
+                        <option value="لعبة الكرة الطائرة" {% if activity == 'لعبة الكرة الطائرة' %}selected{% endif %}>لعبة الكرة الطائرة</option>
+                        <option value="لعبة الكيك بوكسينج" {% if activity == 'لعبة الكيك بوكسينج' %}selected{% endif %}>لعبة الكيك بوكسينج</option>
+                        <option value="لعبة كرة السلة" {% if activity == 'لعبة كرة السلة' %}selected{% endif %}>لعبة كرة السلة</option>
+                        <option value="لعبة كرة القدم" {% if activity == 'لعبة كرة القدم' %}selected{% endif %}>لعبة كرة القدم</option>
+                    </select>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary">بحث</button>
+        </form>
+    </div>
+
+    <table class="table table-striped mt-3">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>اسم اللاعب</th>
+                <th>اللعبة</th>
+                <th>الحصص</th>
+                <th>عدد الحضور</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for subscriber in subscribers %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ subscriber.name }}</td>
+                <td>{{ subscriber.activity }}</td>
+                <td>{{ subscriber.number_of_sessions }}</td>
+                <td>{{ subscriber.num_of_day_attendance }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script>
+function exportPrintAttendanceToExcel() {
+    var subscribers = [];
+    var rows = document.querySelectorAll('tbody tr');
+    rows.forEach(function(row) {
+        var cells = row.querySelectorAll('td');
+        var subscriber = {
+            '#': cells[0].innerText,
+            'اسم اللاعب': cells[1].innerText,
+            'اللعبة': cells[2].innerText,
+            'الحصص': cells[3].innerText,
+            'عدد الحضور': cells[4].innerText
+        };
+        subscribers.push(subscriber);
+    });
+
+    var data = {
+        subscribers: subscribers
+    };
+
+    fetch("{% url 'export_print_attendance_to_excel' %}", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": "{{ csrf_token }}",
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.blob())
+    .then(blob => {
+        var link = document.createElement('a');
+        link.href = window.URL.createObjectURL(blob);
+        link.download = "print_attendance.xlsx";
+        link.click();
+    })
+    .catch(error => console.error('Error:', error));
+}
+</script>
+{% endblock %}

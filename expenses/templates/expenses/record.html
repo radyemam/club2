@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="table-container mt-5">
+        <div class="d-flex justify-content-between mb-3">
+            <a href="{% url 'new_record' %}" class="btn btn-success">سند صرف جديد</a>
+            <button class="btn btn-secondary">بحث</button>
+        </div>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>بند الصرف</th>
+                    <th>المبلغ</th>
+                    <th>التاريخ</th>
+                    <th>نوع الصرف</th>
+                    <th>التفاصيل</th>
+                    <th>المستخدم</th>
+                    <th>الإجراءات</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for expense in expenses %}
+                <tr>
+                    <td>{{ expense.order }}</td>
+                    <td>{{ expense.item }}</td>
+                    <td>{{ expense.amount }}</td>
+                    <td>{{ expense.date }}</td>
+                    <td>{{ expense.expense_type }}</td>
+                    <td>{{ expense.details }}</td>
+                    <td>{{ expense.user }}</td>
+                    <td>
+                        <a href="{% url 'edit_record' expense.id %}" class="btn btn-warning btn-sm">تعديل</a>
+                        <a href="{% url 'delete_record' expense.id %}" class="btn btn-danger btn-sm" onclick="return confirm('هل أنت متأكد من أنك تريد حذف هذا السجل؟')">حذف</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

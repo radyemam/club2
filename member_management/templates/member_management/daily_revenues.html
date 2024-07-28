@@ -1,0 +1,185 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1>الإيرادات اليومية</h1>
+    <div class="d-flex justify-content-between mb-3">
+        <button class="btn btn-info" onclick="toggleFilterForm()">البحث والاستعلام</button>
+        <button class="btn btn-primary" onclick="exportToExcel()">تصدير إلى Excel</button>
+    </div>
+    
+    <div id="filterForm" style="display: none; background-color: #E9F7FD; padding: 15px; border-radius: 5px;">
+        <form id="searchForm" method="get" action="{% url 'daily_revenues' %}">
+            {% csrf_token %}
+            <div class="form-row">
+                <div class="form-group col-md-3">
+                    <label for="from_date">التاريخ من</label>
+                    <input type="date" class="form-control" id="from_date" name="from_date" value="{{ from_date|default_if_none:'' }}">
+                </div>
+                <div class="form-group col-md-3">
+                    <label for="to_date">التاريخ إلى</label>
+                    <input type="date" class="form-control" id="to_date" name="to_date" value="{{ to_date|default_if_none:'' }}">
+                </div>
+                <div class="form-group col-md-3">
+                    <label for="branch">الفرع</label>
+                    <input type="text" class="form-control" id="branch" name="branch" value="{{ branch|default_if_none:'' }}">
+                </div>
+                <div class="form-group col-md-3">
+                    <label for="activity">اللعبة</label>
+                    <select class="form-control" id="activity" name="activity">
+                        <option value="">اختر النشاط</option>
+                        <option value="إيجار مسبح" {% if activity == 'إيجار مسبح' %}selected{% endif %}>إيجار مسبح</option>
+                        <option value="إيجار ملعب سلة" {% if activity == 'إيجار ملعب سلة' %}selected{% endif %}>إيجار ملعب سلة</option>
+                        <option value="إيجار ملعب طائرة" {% if activity == 'إيجار ملعب طائرة' %}selected{% endif %}>إيجار ملعب طائرة</option>
+                        <option value="إيجار ملعب كرة القدم" {% if activity == 'إيجار ملعب كرة القدم' %}selected{% endif %}>إيجار ملعب كرة القدم</option>
+                        <option value="نشطة ملابس رياضية" {% if activity == 'نشطة ملابس رياضية' %}selected{% endif %}>نشطة ملابس رياضية</option>
+                        <option value="طقم ملابس مفرد لون أزرق" {% if activity == 'طقم ملابس مفرد لون أزرق' %}selected{% endif %}>طقم ملابس مفرد لون أزرق</option>
+                        <option value="طقم ملابس مفرد لون أصفر" {% if activity == 'طقم ملابس مفرد لون أصفر' %}selected{% endif %}>طقم ملابس مفرد لون أصفر</option>
+                        <option value="طقم ملابس مفرد لون موف" {% if activity == 'طقم ملابس مفرد لون موف' %}selected{% endif %}>طقم ملابس مفرد لون موف</option>
+                        <option value="لعبة الإسكواش" {% if activity == 'لعبة الإسكواش' %}selected{% endif %}>لعبة الإسكواش</option>
+                        <option value="لعبة التايكوندو" {% if activity == 'لعبة التايكوندو' %}selected{% endif %}>لعبة التايكوندو</option>
+                        <option value="لعبة التنس الأرضي" {% if activity == 'لعبة التنس الأرضي' %}selected{% endif %}>لعبة التنس الأرضي</option>
+                        <option value="لعبة الجمباز" {% if activity == 'لعبة الجمباز' %}selected{% endif %}>لعبة الجمباز</option>
+                        <option value="لعبة السباحة" {% if activity == 'لعبة السباحة' %}selected{% endif %}>لعبة السباحة</option>
+                        <option value="لعبة الكاراتيه" {% if activity == 'لعبة الكاراتيه' %}selected{% endif %}>لعبة الكاراتيه</option>
+                        <option value="لعبة الكرة الطائرة" {% if activity == 'لعبة الكرة الطائرة' %}selected{% endif %}>لعبة الكرة الطائرة</option>
+                        <option value="لعبة الكيك بوكسينج" {% if activity == 'لعبة الكيك بوكسينج' %}selected{% endif %}>لعبة الكيك بوكسينج</option>
+                        <option value="لعبة كرة السلة" {% if activity == 'لعبة كرة السلة' %}selected{% endif %}>لعبة كرة السلة</option>
+                        <option value="لعبة كرة القدم" {% if activity == 'لعبة كرة القدم' %}selected{% endif %}>لعبة كرة القدم</option>
+                    </select>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary">بحث</button>
+            <button type="button" class="btn btn-secondary" onclick="toggleFilterForm()">إلغاء</button>
+        </form>
+    </div>
+
+    {% if show_table %}
+    <table class="table table-striped table-bordered mt-3">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>رقم الاشتراك</th>
+                <th>رقم اللاعب</th>
+                <th>الاسم</th>
+                <th>تاريخ التسجيل</th>
+                <th>طريقة الدفع</th>
+                <th>اللعبة</th>
+                <th>المستخدم</th>
+                <th>المبلغ</th>
+                <th>المتبقي</th>
+                <th>المدفوع</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for subscriber in subscribers %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ subscriber.subscription_number }}</td>
+                <td>{{ subscriber.player_number }}</td>
+                <td>{{ subscriber.name }}</td>
+                <td>{{ subscriber.registration_date }}</td>
+                <td>{{ subscriber.payment_method }}</td>
+                <td>{{ subscriber.activity }}</td>
+                <td>{{ subscriber.user }}</td>
+                <td>{{ subscriber.amount|floatformat:0 }}</td>
+                <td>{{ subscriber.remaining|floatformat:0 }}</td>
+                <td>{{ subscriber.amount|floatformat:0|add:subscriber.remaining|floatformat:0 }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr>
+                <th colspan="8">الإجمالي</th>
+                <th id="total-amount">{{ total_amount|floatformat:0 }}</th>
+                <th id="total-remaining">{{ total_remaining|floatformat:0 }}</th>
+                <th id="total-paid">{{ total_paid|floatformat:0 }}</th>
+            </tr>
+        </tfoot>
+    </table>
+    {% endif %}
+</div>
+
+<script>
+function toggleFilterForm() {
+    var form = document.getElementById('filterForm');
+    if (form.style.display === 'none') {
+        form.style.display = 'block';
+    } else {
+        form.style.display = 'none';
+    }
+}
+
+function exportToExcel() {
+    var subscribers = [];
+    var rows = document.querySelectorAll('tbody tr');
+    rows.forEach(function(row) {
+        var cells = row.querySelectorAll('td');
+        var subscriber = {
+            '#': cells[0].innerText,
+            'رقم الاشتراك': cells[1].innerText,
+            'رقم اللاعب': cells[2].innerText,
+            'الاسم': cells[3].innerText,
+            'تاريخ التسجيل': cells[4].innerText,
+            'طريقة الدفع': cells[5].innerText,
+            'اللعبة': cells[6].innerText,
+            'المستخدم': cells[7].innerText,
+            'المبلغ': parseFloat(cells[8].innerText) || 0,
+            'المتبقي': parseFloat(cells[9].innerText) || 0,
+            'المدفوع': parseFloat(cells[10].innerText) || 0,
+        };
+        subscribers.push(subscriber);
+    });
+
+    var totals = {
+        total_amount: parseFloat(document.getElementById('total-amount').innerText) || 0,
+        total_remaining: parseFloat(document.getElementById('total-remaining').innerText) || 0,
+        total_paid: parseFloat(document.getElementById('total-paid').innerText) || 0,
+    };
+
+    var data = {
+        subscribers: subscribers,
+        total_amount: totals.total_amount,
+        total_remaining: totals.total_remaining,
+        total_paid: totals.total_paid
+    };
+
+    fetch("{% url 'export_daily_revenues_to_excel' %}", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": "{{ csrf_token }}",
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.blob())
+    .then(blob => {
+        var link = document.createElement('a');
+        link.href = window.URL.createObjectURL(blob);
+        link.download = "daily_revenues.xlsx";
+        link.click();
+    })
+    .catch(error => console.error('Error:', error));
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    let totalAmount = 0;
+    let totalRemaining = 0;
+    let totalPaid = 0;
+
+    document.querySelectorAll('tbody tr').forEach(function(row) {
+        let amount = parseFloat(row.children[8].textContent) || 0;
+        let remaining = parseFloat(row.children[9].textContent) || 0;
+        let paid = amount - remaining;
+
+        totalAmount += amount;
+        totalRemaining += remaining;
+        totalPaid += paid;
+    });
+
+    document.getElementById('total-amount').textContent = totalAmount.toFixed(0);
+    document.getElementById('total-remaining').textContent = totalRemaining.toFixed(0);
+    document.getElementById('total-paid').textContent = totalPaid.toFixed(0);
+});
+</script>
+{% endblock %}

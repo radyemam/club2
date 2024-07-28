@@ -1,0 +1,20 @@
+<IfModule mod_wsgi.c>
+    WSGIScriptAlias / /home/gohv8kop5eaq/public_html/shahid-free.online/myproject/wsgi.py
+    WSGIPythonPath /home/gohv8kop5eaq/public_html/shahid-free.online
+
+    <Directory /home/gohv8kop5eaq/public_html/shahid-free.online>
+        <Files wsgi.py>
+            Require all granted
+        </Files>
+    </Directory>
+</IfModule>
+
+Alias /static /home/gohv8kop5eaq/public_html/shahid-free.online/static
+<Directory /home/gohv8kop5eaq/public_html/shahid-free.online/static>
+    Require all granted
+</Directory>
+
+Alias /media /home/gohv8kop5eaq/public_html/shahid-free.online/media
+<Directory /home/gohv8kop5eaq/public_html/shahid-free.online/media>
+    Require all granted
+</Directory>

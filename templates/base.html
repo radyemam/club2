@@ -1,0 +1,232 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <style>
+        @media print {
+            @page {
+                size: landscape;
+            }
+            .sidebar, .navbar, .footer, .btn {
+                display: none !important;
+            }
+        }
+        body {
+            direction: rtl;
+            text-align: right;
+        }
+        .sidebar {
+            position: fixed;
+            top: 60px; /* Adjusted to fit under topbar */
+            right: 0;
+            height: calc(100% - 60px); /* Adjusted to fit under topbar */
+            width: 300px; /* Increased width */
+            background-color: #000;
+            color: #fff;
+            padding-top: 20px;
+        }
+        .sidebar a {
+            padding: 10px 15px;
+            text-decoration: none;
+            font-size: 18px;
+            color: #fff;
+            display: block;
+        }
+        .sidebar a:hover {
+            background-color: #ddd;
+            color: #000;
+        }
+        .sidebar .submenu {
+            display: none;
+        }
+        .sidebar .submenu a {
+            padding-left: 30px;
+            background-color: #333;
+        }
+        .sidebar .active + .submenu {
+            display: block;
+        }
+        .sidebar .submenu a:hover {
+            background-color: #555;
+        }
+        .icon {
+            margin-left: 5px;
+        }
+        .user-info {
+            padding: 15px;
+            text-align: center;
+        }
+        .user-info i {
+            font-size: 50px;
+            color: #fff;
+            cursor: pointer;
+        }
+        .user-info h5 {
+            margin: 10px 0 5px;
+        }
+        .user-info p {
+            margin: 0;
+        }
+        .search-box {
+            padding: 15px;
+            text-align: center;
+        }
+        .search-box input {
+            width: calc(100% - 40px);
+            padding: 5px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        .search-box button {
+            border: none;
+            background: none;
+            color: #ccc;
+            cursor: pointer;
+        }
+        .topbar {
+            width: 100%;
+            height: 60px;
+            background-color: #000; /* Changed to black */
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: fixed;
+            top: 0;
+            z-index: 1000;
+            color: #fff;
+        }
+        .topbar .user-info {
+            display: flex;
+            align-items: center;
+            margin-right: auto; /* Move to the left */
+        }
+        .topbar .user-info h5 {
+            margin: 0 10px;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <div class="topbar">
+        <div class="user-info" onclick="showUserProfile()">
+            <i class="fa fa-user-circle"></i>
+            <h5>{{ request.user.username }}</h5>
+        </div>
+    </div>
+    <div class="sidebar">
+        <div class="user-info">
+            <i class="fa fa-user-circle" onclick="showUserProfile()"></i>
+            <h5>{{ request.user.username }}</h5>
+            <p>متصل</p>
+        </div>
+        <div class="search-box">
+            <form method="get" action="{% url 'subscribers_overview' %}">
+                <input type="text" name="search" placeholder="ابحث عن مشترك">
+                <button type="submit"><i class="fa fa-search"></i></button>
+            </form>
+        </div>
+        <ul>
+            <li>
+                <a href="#" class="toggle-submenu"><i class="fa fa-bar-chart icon"></i>الاحصائيات والتقارير <span>&#9662;</span></a>
+                <ul class="submenu">
+                    <li><a href="{% url 'statistics_report' %}">تقرير الاحصائيات</a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="#" class="toggle-submenu"><i class="fa fa-list icon"></i>التسجيل والاشتراكات <span>&#9662;</span></a>
+                <ul class="submenu">
+                    <li><a href="{% url 'subscribers_overview' %}">قائمة المشتركين</a></li>
+                    <li><a href="{% url 'daily_revenues' %}">الإيرادات اليومية</a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="#" class="toggle-submenu"><i class="fa fa-calendar icon"></i>التحضير اليومي <span>&#9662;</span></a>
+                <ul class="submenu">
+                    <li><a href="{% url 'attendance_print' %}">طباعة المشتركين</a></li>
+                    <li><a href="{% url 'attendance_by_date' %}">تحضير المشتركين بالتاريخ</a></li>
+                    <li><a href="{% url 'today_attendance' %}">تحضير مشتركين اليوم</a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="#" class="toggle-submenu"><i class="fa fa-file-text icon"></i>تقارير التسجيل والاشتراكات <span>&#9662;</span></a>
+                <ul class="submenu">
+                    <li><a href="{% url 'registration_date_report' %}">تقرير بتاريخ التسجيل</a></li>
+                    <li><a href="{% url 'subscription_start_report' %}">تقرير عن بداية الاشتراك</a></li>
+                    <li><a href="{% url 'subscription_end_report' %}">تقرير عن نهاية الاشتراك</a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="#" class="toggle-submenu"><i class="fa fa-money icon"></i>المصروفات والإيرادات <span>&#9662;</span></a>
+                <ul class="submenu">
+                    <li><a href="{% url 'expenses_and_revenues_report' %}">تقرير المصروفات والإيرادات</a></li>
+                    <li><a href="{% url 'expense_record' %}">تسجيل المصروفات</a></li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+    <div class="content" style="margin-right: 300px; padding-top: 80px;"> <!-- Adjusted padding to fit under topbar -->
+        {% block content %}
+        {% endblock %}
+    </div>
+    
+    <!-- Modal -->
+<div class="modal fade" id="userProfileModal" tabindex="-1" role="dialog" aria-labelledby="userProfileModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="userProfileModalLabel">الملف الشخصي</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="text-center">
+                    <i class="fa fa-user-circle img-fluid rounded-circle mb-3" style="font-size: 100px; color: #000;"></i>
+                    <h5>{{ request.user.username }}</h5>
+                    <p>{{ request.user.email }}</p>
+                    <p>{{ request.user.profile.phone_number }}</p> <!-- عرض رقم الهاتف هنا -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a href="{% url 'logout' %}" class="btn btn-danger">تسجيل الخروج</a>
+                <a href="{% url 'profile_edit' %}" class="btn btn-primary">تعديل الملف الشخصي</a> <!-- تعديل الرابط -->
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script>
+        function showUserProfile() {
+            $('#userProfileModal').modal('show');
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            var toggleSubmenuLinks = document.querySelectorAll('.toggle-submenu');
+            toggleSubmenuLinks.forEach(function(link) {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    var submenu = this.nextElementSibling;
+                    if (submenu.style.display === 'block') {
+                        submenu.style.display = 'none';
+                    } else {
+                        submenu.style.display = 'block';
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

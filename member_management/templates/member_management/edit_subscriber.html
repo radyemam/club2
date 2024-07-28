@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1>تعديل بيانات المشترك</h1>
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="name">الاسم</label>
+            <input type="text" class="form-control" id="name" name="name" value="{{ subscriber.name }}">
+        </div>
+        <div class="form-group">
+            <label for="phone">الجوال</label>
+            <input type="text" class="form-control" id="phone" name="phone" value="{{ subscriber.phone }}">
+        </div>
+        <div class="form-group">
+            <label for="branch">الفرع</label>
+            <input type="text" class="form-control" id="branch" name="branch" value="{{ subscriber.branch }}">
+        </div>
+        <div class="form-group">
+            <label for="nationality">الجنسية</label>
+            <input type="text" class="form-control" id="nationality" name="nationality" value="{{ subscriber.nationality }}">
+        </div>
+        <div class="form-group">
+            <label for="activity">النشاط</label>
+            <input type="text" class="form-control" id="activity" name="activity" value="{{ subscriber.activity }}">
+        </div>
+        <div class="form-group">
+            <label for="registration_date">تاريخ التسجيل</label>
+            <input type="date" class="form-control" id="registration_date" name="registration_date" value="{{ subscriber.registration_date }}">
+        </div>
+        <div class="form-group">
+            <label for="amount">المبلغ</label>
+            <input type="text" class="form-control" id="amount" name="amount" value="{{ subscriber.amount }}">
+        </div>
+        <div class="form-group">
+            <label for="remaining">المتبقي</label>
+            <input type="text" class="form-control" id="remaining" name="remaining" value="{{ subscriber.remaining }}">
+        </div>
+        <button type="submit" class="btn btn-primary">حفظ</button>
+    </form>
+</div>
+{% endblock %}

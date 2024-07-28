@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="modal show" tabindex="-1" role="dialog" style="display: block; background-color: rgba(0,0,0,0.5);">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">تعديل سند صرف</h5>
+            </div>
+            <div class="modal-body">
+                <form method="post" action="{% url 'edit_record' expense_id %}" onsubmit="return validateForm()">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="item">بند المصروف</label>
+                        <select class="form-control" id="item" name="item" required>
+                            <option value="">اختر بند المصروف</option>
+                            <option value="رواتب" {% if expense.item == "رواتب" %}selected{% endif %}>رواتب</option>
+                            <option value="صيانة" {% if expense.item == "صيانة" %}selected{% endif %}>صيانة</option>
+                            <option value="سداد فاتورة جوال" {% if expense.item == "سداد فاتورة جوال" %}selected{% endif %}>سداد فاتورة جوال</option>
+                            <option value="استرجاع كرة قدم" {% if expense.item == "استرجاع كرة قدم" %}selected{% endif %}>استرجاع كرة قدم</option>
+                            <option value="مشتريات" {% if expense.item == "مشتريات" %}selected{% endif %}>مشتريات</option>
+                            <option value="مصروفات عامة" {% if expense.item == "مصروفات عامة" %}selected{% endif %}>مصروفات عامة</option>
+                            <option value="أخرى" {% if expense.item == "أخرى" %}selected{% endif %}>أخرى</option>
+                        </select>
+                        <small id="itemError" class="form-text text-danger" style="display: none;">برجاء ملء هذا الحقل</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="amount">المبلغ</label>
+                        <input type="number" class="form-control" id="amount" name="amount" value="{{ expense.amount }}" placeholder="أدخل المبلغ" required>
+                        <small id="amountError" class="form-text text-danger" style="display: none;">برجاء ملء هذا الحقل</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="date">تاريخ الصرف</label>
+                        <input type="date" class="form-control" id="date" name="date" value="{{ expense.date }}" required>
+                        <small id="dateError" class="form-text text-danger" style="display: none;">برجاء ملء هذا الحقل</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="expense_type">نوع الصرف</label>
+                        <select class="form-control" id="expense_type" name="expense_type" required>
+                            <option value="">اختر نوع الصرف</option>
+                            <option value="نقدا" {% if expense.expense_type == "نقدا" %}selected{% endif %}>نقدا</option>
+                            <option value="شيك" {% if expense.expense_type == "شيك" %}selected{% endif %}>شيك</option>
+                            <option value="تحويل بنكي" {% if expense.expense_type == "تحويل بنكي" %}selected{% endif %}>تحويل بنكي</option>
+                        </select>
+                        <small id="expenseTypeError" class="form-text text-danger" style="display: none;">برجاء ملء هذا الحقل</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="details">تفاصيل</label>
+                        <input type="text" class="form-control" id="details" name="details" value="{{ expense.details }}" placeholder="أدخل التفاصيل" required>
+                        <small id="detailsError" class="form-text text-danger" style="display: none;">برجاء ملء هذا الحقل</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="user">المستخدم</label>
+                        <input type="text" class="form-control" id="user" name="user" value="{{ expense.user }}" placeholder="أدخل اسم المستخدم" required>
+                        <small id="userError" class="form-text text-danger" style="display: none;">برجاء ملء هذا الحقل</small>
+                    </div>
+                    <button type="submit" class="btn btn-primary">تعديل</button>
+                    <button type="button" class="btn btn-secondary" onclick="window.location.href='{% url 'expense_record' %}'">إلغاء</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function validateForm() {
+        let isValid = true;
+        
+        const item = document.getElementById('item');
+        const amount = document.getElementById('amount');
+        const date = document.getElementById('date');
+        const expenseType = document.getElementById('expense_type');
+        const details = document.getElementById('details');
+        const user = document.getElementById('user');
+
+        if (item.value === "") {
+            document.getElementById('itemError').style.display = 'block';
+            isValid = false;
+        } else {
+            document.getElementById('itemError').style.display = 'none';
+        }
+
+        if (amount.value === "") {
+            document.getElementById('amountError').style.display = 'block';
+            isValid = false;
+        } else {
+            document.getElementById('amountError').style.display = 'none';
+        }
+
+        if (date.value === "") {
+            document.getElementById('dateError').style.display = 'block';
+            isValid = false;
+        } else {
+            document.getElementById('dateError').style.display = 'none';
+        }
+
+        if (expenseType.value === "") {
+            document.getElementById('expenseTypeError').style.display = 'block';
+            isValid = false;
+        } else {
+            document.getElementById('expenseTypeError').style.display = 'none';
+        }
+
+        if (details.value === "") {
+            document.getElementById('detailsError').style.display = 'block';
+            isValid = false;
+        } else {
+            document.getElementById('detailsError').style.display = 'none';
+        }
+
+        if (user.value === "") {
+            document.getElementById('userError').style.display = 'block';
+            isValid = false;
+        } else {
+            document.getElementById('userError').style.display = 'none';
+        }
+
+        return isValid;
+    }
+</script>
+{% endblock %}

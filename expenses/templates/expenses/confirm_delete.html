@@ -1,0 +1,82 @@
+<!-- confirm_delete.html -->
+
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="table-container mt-5">
+        <div class="d-flex justify-content-between mb-3">
+            <a href="{% url 'new_record' %}" class="btn btn-success">سند صرف جديد</a>
+            <button class="btn btn-secondary">بحث</button>
+        </div>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>بند الصرف</th>
+                    <th>المبلغ</th>
+                    <th>التاريخ</th>
+                    <th>نوع الصرف</th>
+                    <th>التفاصيل</th>
+                    <th>المستخدم</th>
+                    <th>الإجراءات</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for expense in expenses %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ expense.item }}</td>
+                    <td>{{ expense.amount }}</td>
+                    <td>{{ expense.date }}</td>
+                    <td>{{ expense.expense_type }}</td>
+                    <td>{{ expense.details }}</td>
+                    <td>{{ expense.user }}</td>
+                    <td>
+                        <a href="{% url 'edit_record' expense.id %}" class="btn btn-warning btn-sm">تعديل</a>
+                        <button class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteModal" data-id="{{ expense.id }}">حذف</button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Bootstrap Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="deleteModalLabel">تأكيد الحذف</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        هل تريد حقًا حذف هذا السجل؟
+      </div>
+      <div class="modal-footer">
+        <form method="post" action="">
+            {% csrf_token %}
+            <input type="hidden" name="expense_id" id="delete-expense-id">
+            <button type="submit" class="btn btn-danger">حذف</button>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">إلغاء</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+    $('#deleteModal').on('show.bs.modal', function (event) {
+        var button = $(event.relatedTarget);
+        var id = button.data('id');
+        var modal = $(this);
+        modal.find('#delete-expense-id').val(id);
+        var actionUrl = "{% url 'delete_record' '0' %}".replace('0', id);
+        modal.find('form').attr('action', actionUrl);
+        console.log('Form action URL: ' + actionUrl); // إضافة طباعة للتأكد من أن URL صحيح
+    });
+</script>
+{% endblock %}

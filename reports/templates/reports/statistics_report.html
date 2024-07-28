@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1>الإحصائيات</h1>
+    <div class="row">
+        <div class="col-md-3">
+            <div class="card text-white bg-success mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">إجمالي الاشتراكات</h5>
+                    <p class="card-text">{{ total_subscribers_count }}</p>
+                    <a href="{% url 'reports_total_subscribers' %}" class="btn btn-light">عرض التفاصيل</a>
+                </div>
+            </div>
+        </div>        
+        <div class="col-md-3">
+            <div class="card text-white bg-warning mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">الاشتراكات المنتهية</h5>
+                    <p class="card-text">{{ ended_subscriptions_count }}</p>
+                    <a href="{% url 'ended_subscriptions' %}" class="btn btn-light">عرض التفاصيل</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-primary mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">الاشتراكات السارية</h5>
+                    <p class="card-text">{{ active_subscriptions_count }}</p>
+                    <a href="{% url 'active_subscriptions' %}" class="btn btn-light">عرض التفاصيل</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-danger mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">اقترب على الانتهاء</h5>
+                    <p class="card-text">{{ near_expiry_subscriptions_count }}</p>
+                    <a href="{% url 'near_expiry_subscriptions' %}" class="btn btn-light">عرض التفاصيل</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-secondary mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">الاشتراكات الجديدة</h5>
+                    <p class="card-text">{{ new_subscriptions_count }}</p>
+                    <a href="{% url 'new_subscriptions' %}" class="btn btn-light">عرض التفاصيل</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-info mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">تجديد الاشتراكات</h5>
+                    <p class="card-text">{{ renewed_subscriptions_count }}</p>
+                    <a href="{% url 'renewed_subscriptions' %}" class="btn btn-light">عرض التفاصيل</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-danger mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">المبالغ المتبقية</h5>
+                    <p class="card-text">{{ remaining_amounts_count }}</p>
+                    <a href="{% url 'remaining_amounts' %}" class="btn btn-light">عرض التفاصيل</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <table class="table table-bordered mt-3">
+        <thead class="thead-dark">
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">النشاط</th>
+                <th scope="col">المسجلين</th>
+                <th scope="col">المنتهية</th>
+                <th scope="col">السارية</th>
+                <th scope="col">المبلغ</th>
+                <th scope="col">المسدد</th>
+                <th scope="col">المتبقي</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for activity, data in activity_data.items %}
+            <tr>
+                <th scope="row">{{ forloop.counter }}</th>
+                <td>{{ activity }}</td>
+                <td>{{ data.subscribers }}</td>
+                <td>{{ data.ended }}</td>
+                <td>{{ data.active }}</td>
+                <td>{{ data.total_amount }}</td>
+                <td>{{ data.total_amount|add:data.total_remaining|floatformat:"0" }}</td>
+                <td>{{ data.total_remaining }}</td>
+            </tr>
+            {% endfor %}
+            <tr>
+                <th scope="row">إجمالي</th>
+                <td> - </td>
+                <td>{{ total_subscribers_count }}</td>
+                <td>{{ ended_subscriptions_count }}</td>
+                <td>{{ active_subscriptions_count }}</td>
+                <td>{{ total_amount }}</td>
+                <td>{{ total_amount|add:total_remaining|floatformat:"0" }}</td>
+                <td>{{ total_remaining }}</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+{% endblock %}

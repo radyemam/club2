@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1>البحث عن مشترك</h1>
+    <div class="d-flex justify-content-between mb-3">
+        <button class="btn btn-success" onclick="window.location.href='{% url 'add_subscriber' %}'">إضافة مشترك جديد</button>
+        <button class="btn btn-info" onclick="toggleFilterForm()">البحث والاستعلام</button>
+    </div>
+    
+    <!-- فورم الفلتر -->
+    <div id="filterForm" style="display: none; background-color: #E9F7FD; padding: 15px; border-radius: 5px;">
+        <form method="get" action="{% url 'reports_total_subscribers' %}">
+            <div class="form-row">
+                <div class="form-group col-md-3">
+                    <label for="from_date">التاريخ من</label>
+                    <input type="date" class="form-control" id="from_date" name="from_date">
+                </div>
+                <div class="form-group col-md-3">
+                    <label for="to_date">التاريخ إلى</label>
+                    <input type="date" class="form-control" id="to_date" name="to_date">
+                </div>
+                <div class="form-group col-md-3">
+                    <label for="branch">الفرع</label>
+                    <input type="text" class="form-control" id="branch" name="branch">
+                </div>
+                <div class="form-group col-md-3">
+                    <label for="activity">اللعبة</label>
+                    <select class="form-control" id="activity" name="activity">
+                        <option value="">اختر النشاط</option>
+                        <option value="إيجار مسبح">إيجار مسبح</option>
+                        <option value="إيجار ملعب سلة">إيجار ملعب سلة</option>
+                        <option value="إيجار ملعب طائرة">إيجار ملعب طائرة</option>
+                        <option value="إيجار ملعب كرة القدم">إيجار ملعب كرة القدم</option>
+                        <option value="نشطة ملابس رياضية">نشطة ملابس رياضية</option>
+                        <option value="طقم ملابس مفرد لون أزرق">طقم ملابس مفرد لون أزرق</option>
+                        <option value="طقم ملابس مفرد لون أصفر">طقم ملابس مفرد لون أصفر</option>
+                        <option value="طقم ملابس مفرد لون موف">طقم ملابس مفرد لون موف</option>
+                        <option value="لعبة الإسكواش">لعبة الإسكواش</option>
+                        <option value="لعبة التايكوندو">لعبة التايكوندو</option>
+                        <option value="لعبة التنس الأرضي">لعبة التنس الأرضي</option>
+                        <option value="لعبة الجمباز">لعبة الجمباز</option>
+                        <option value="لعبة السباحة">لعبة السباحة</option>
+                        <option value="لعبة الكاراتيه">لعبة الكاراتيه</option>
+                        <option value="لعبة الكرة الطائرة">لعبة الكرة الطائرة</option>
+                        <option value="لعبة الكيك بوكسينج">لعبة الكيك بوكسينج</option>
+                        <option value="لعبة كرة السلة">لعبة كرة السلة</option>
+                        <option value="لعبة كرة القدم">لعبة كرة القدم</option>
+                    </select>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary">بحث</button>
+            <button type="button" class="btn btn-secondary" onclick="toggleFilterForm()">إلغاء</button>
+        </form>
+    </div>
+
+    <table class="table table-striped mt-3">
+        <thead>
+            <tr>
+                <th>رقم اللاعب</th>
+                <th>رقم الاشتراك</th>
+                <th>الاسم</th>
+                <th>الجوال</th>
+                <th style="width: 150px;">اللعبة</th> <!-- تم التعديل هنا -->
+                <th>الفرع</th>
+                <th style="width: 150px;">تاريخ التسجيل</th> <!-- تم التعديل هنا -->
+                <th>المبلغ</th>
+                <th>المتبقي</th>
+                <th>الاشتراكات</th>
+                <th style="width: 120px;">واتس آب</th> <!-- تم التعديل هنا -->
+            </tr>
+        </thead>
+        <tbody>
+            {% for subscriber in subscribers %}
+            <tr>
+                <td>{{ subscriber.player_number }}</td>
+                <td>{{ subscriber.subscription_number }}</td>
+                <td>{{ subscriber.name }}</td>
+                <td>{{ subscriber.phone }}</td>
+                <td>{{ subscriber.activity }}</td>
+                <td>{{ subscriber.branch }}</td>
+                <td>{{ subscriber.registration_date }}</td>
+                <td>{{ subscriber.amount }}</td>
+                <td>{{ subscriber.remaining }}</td>
+                <td><a href="{% url 'subscriber_details' subscriber.id %}" class="btn btn-warning">الاشتراكات</a></td>
+                <td><a href="https://wa.me/+966{{ subscriber.phone }}" class="btn btn-success"><i class="fa fa-whatsapp"></i></a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script>
+function toggleFilterForm() {
+    var form = document.getElementById('filterForm');
+    if (form.style.display === 'none') {
+        form.style.display = 'block';
+    } else {
+        form.style.display = 'none';
+    }
+}
+</script>
+{% endblock %}

@@ -1,0 +1,213 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1>إضافة مشترك جديد</h1>
+    <form id="addSubscriberForm" method="post" action="{% url 'add_subscriber' %}" enctype="multipart/form-data">
+        {% csrf_token %}
+        <!-- الحقول الحالية -->
+        <div class="form-row">
+            <div class="form-group col-md-4">
+                <label for="player_number">رقم اللاعب</label>
+                <input type="text" class="form-control" id="player_number" name="player_number" required>
+            </div>
+            <div class="form-group col-md-4">
+                <label for="subscription_number">رقم الاشتراك</label>
+                <input type="text" class="form-control" id="subscription_number" name="subscription_number" required>
+            </div>
+            <div class="form-group col-md-4">
+                <label for="name">الاسم</label>
+                <input type="text" class="form-control" id="name" name="name" required>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-4">
+                <label for="phone">الجوال</label>
+                <input type="text" class="form-control" id="phone" name="phone" required>
+            </div>
+            <div class="form-group col-md-4">
+                <label for="activity">اللعبة</label>
+                <select class="form-control" id="activity" name="activity" required>
+                    <option value="">اختر النشاط</option>
+                    <option value="إيجار مسبح">إيجار مسبح</option>
+                    <option value="إيجار ملعب سلة">إيجار ملعب سلة</option>
+                    <option value="إيجار ملعب طائرة">إيجار ملعب طائرة</option>
+                    <option value="إيجار ملعب كرة القدم">إيجار ملعب كرة القدم</option>
+                    <option value="نشطة ملابس رياضية">نشطة ملابس رياضية</option>
+                    <option value="طقم ملابس مفرد لون أزرق">طقم ملابس مفرد لون أزرق</option>
+                    <option value="طقم ملابس مفرد لون أصفر">طقم ملابس مفرد لون أصفر</option>
+                    <option value="طقم ملابس مفرد لون موف">طقم ملابس مفرد لون موف</option>
+                    <option value="لعبة الإسكواش">لعبة الإسكواش</option>
+                    <option value="لعبة التايكوندو">لعبة التايكوندو</option>
+                    <option value="لعبة التنس الأرضي">لعبة التنس الأرضي</option>
+                    <option value="لعبة الجمباز">لعبة الجمباز</option>
+                    <option value="لعبة السباحة">لعبة السباحة</option>
+                    <option value="لعبة الكاراتيه">لعبة الكاراتيه</option>
+                    <option value="لعبة الكرة الطائرة">لعبة الكرة الطائرة</option>
+                    <option value="لعبة الكيك بوكسينج">لعبة الكيك بوكسينج</option>
+                    <option value="لعبة كرة السلة">لعبة كرة السلة</option>
+                    <option value="لعبة كرة القدم">لعبة كرة القدم</option>
+                </select>
+            </div>
+            <div class="form-group col-md-4">
+                <label for="branch">الفرع</label>
+                <input type="text" class="form-control" id="branch" name="branch" required>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-4">
+                <label for="registration_date">تاريخ التسجيل</label>
+                <input type="date" class="form-control" id="registration_date" name="registration_date" required>
+            </div>
+            <div class="form-group col-md-4">
+                <label for="amount">المبلغ</label>
+                <input type="number" class="form-control" id="amount" name="amount" required>
+            </div>
+            <div class="form-group col-md-4">
+                <label for="remaining">المتبقي</label>
+                <input type="number" class="form-control" id="remaining" name="remaining" required>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-4">
+                <label for="expiration_date">تاريخ الانتهاء</label>
+                <input type="date" class="form-control" id="expiration_date" name="expiration_date" required>
+            </div>
+        </div>
+        <!-- الحقول الجديدة -->
+        <div class="form-row">
+            <div class="form-group col-md-4">
+                <label for="guardian_phone">جوال ولي الأمر</label>
+                <input type="text" class="form-control" id="guardian_phone" name="guardian_phone">
+            </div>
+            <div class="form-group col-md-4">
+                <label for="birth_date">تاريخ الميلاد</label>
+                <input type="date" class="form-control" id="birth_date" name="birth_date">
+            </div>
+            <div class="form-group col-md-4">
+                <label for="nationality">الجنسية</label>
+                <input type="text" class="form-control" id="nationality" name="nationality">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-4">
+                <label for="id_document">أوراق البطاقة</label>
+                <input type="file" class="form-control" id="id_document" name="id_document">
+                <div id="uploadStatus"></div>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-4">
+                <label for="number_of_sessions">عدد الحصص</label>
+                <input type="number" class="form-control" id="number_of_sessions" name="number_of_sessions" required>
+            </div>
+        </div>
+        <div class="form-row">
+            <label>اختر أيام الأسبوع</label>
+            <div class="form-group col-md-12">
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="day1" name="days" value="السبت">
+                    <label class="form-check-label" for="day1">السبت</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="day2" name="days" value="الأحد">
+                    <label class="form-check-label" for="day2">الأحد</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="day3" name="days" value="الاثنين">
+                    <label class="form-check-label" for="day3">الاثنين</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="day4" name="days" value="الثلاثاء">
+                    <label class="form-check-label" for="day4">الثلاثاء</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="day5" name="days" value="الأربعاء">
+                    <label class="form-check-label" for="day5">الأربعاء</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="day6" name="days" value="الخميس">
+                    <label class="form-check-label" for="day6">الخميس</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="day7" name="days" value="الجمعة">
+                    <label class="form-check-label" for="day7">الجمعة</label>
+                </div>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-4">
+                <label for="payment_method">طريقة الدفع</label>
+                <select class="form-control" id="payment_method" name="payment_method" required>
+                    <option value="">اختر طريقة الدفع</option>
+                    <option value="كاش">كاش</option>
+                    <option value="شيك">شيك</option>
+                    <option value="تحويل بنكي">تحويل بنكي</option>
+                    <option value="نقاط بيع">نقاط بيع</option>
+                    <option value="شبكة">شبكة</option>
+                </select>
+            </div>
+        </div>
+        <!-- نهاية الحقول الجديدة والقديمة -->
+        <button type="submit" class="btn btn-primary">إضافة</button>
+        <button type="button" class="btn btn-secondary" onclick="window.location.href='{% url 'total_subscribers' %}'">إلغاء</button>
+    </form>
+</div>
+
+<script>
+document.getElementById('addSubscriberForm').onsubmit = function(event) {
+    var fileInput = document.getElementById('id_document');
+    var uploadStatus = document.getElementById('uploadStatus');
+    var dayCheckboxes = document.querySelectorAll('input[name="days"]:checked');
+
+    if (dayCheckboxes.length === 0) {
+        alert('يجب اختيار يوم واحد على الأقل');
+        event.preventDefault();
+        return false;
+    }
+
+    if (fileInput.files.length > 0) {
+        event.preventDefault();
+        var formData = new FormData();
+        formData.append('id_document', fileInput.files[0]);
+
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', '{% url "upload_id_document" %}', true);
+        xhr.setRequestHeader('X-CSRFToken', '{{ csrf_token }}');
+
+        xhr.upload.onprogress = function(event) {
+            if (event.lengthComputable) {
+                var percentComplete = (event.loaded / event.total) * 100;
+                uploadStatus.innerHTML = 'جاري تحميل الملف: ' + Math.round(percentComplete) + '%';
+                uploadStatus.style.color = 'orange';
+            }
+        };
+
+        xhr.onload = function() {
+            if (xhr.status == 200) {
+                var response = JSON.parse(xhr.responseText);
+                if (response.url) {
+                    var idDocumentUrlInput = document.createElement('input');
+                    idDocumentUrlInput.type = 'hidden';
+                    idDocumentUrlInput.name = 'id_document_url';
+                    idDocumentUrlInput.value = response.url;
+                    document.getElementById('addSubscriberForm').appendChild(idDocumentUrlInput);
+
+                    uploadStatus.innerHTML = 'تم تحميل الملف بنجاح';
+                    uploadStatus.style.color = 'green';
+                    document.getElementById('addSubscriberForm').submit();
+                } else {
+                    uploadStatus.innerHTML = 'فشل في تحميل الملف';
+                    uploadStatus.style.color = 'red';
+                }
+            } else {
+                uploadStatus.innerHTML = 'فشل في تحميل الملف';
+                uploadStatus.style.color = 'red';
+            }
+        };
+
+        xhr.send(formData);
+    }
+};
+</script>
+{% endblock %}

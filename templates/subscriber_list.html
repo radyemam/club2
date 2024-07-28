@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>قائمة المشتركين</h1>
+<table>
+    <thead>
+        <tr>
+            <th>الاسم</th>
+            <th>الجنسية</th>
+            <th>تاريخ التسجيل</th>
+            <th>الاشتراك</th>
+            <th>التليفون</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for subscriber in subscribers %}
+        <tr>
+            <td>{{ subscriber.name }}</td>
+            <td>{{ subscriber.nationality }}</td>
+            <td>{{ subscriber.registration_date }}</td>
+            <td>{{ subscriber.subscription }}</td>
+            <td>{{ subscriber.phone }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

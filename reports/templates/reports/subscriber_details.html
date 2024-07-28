@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1>اشتراكات العميل</h1>
+    <table class="table table-bordered">
+        <tr>
+            <th>رقم اللاعب</th>
+            <td>{{ subscriber.player_number }}</td>
+            <th>الاسم</th>
+            <td>{{ subscriber.name }}</td>
+        </tr>
+        <tr>
+            <th>الجوال</th>
+            <td>{{ subscriber.phone }}</td>
+            <th>الفرع</th>
+            <td>{{ subscriber.branch }}</td>
+        </tr>
+        <tr>
+            <th>اللعبة</th>
+            <td>{{ subscriber.activity }}</td>
+            <th>تاريخ التسجيل</th>
+            <td>{{ subscriber.registration_date }}</td>
+        </tr>
+        <tr>
+            <th>المبلغ</th>
+            <td>{{ subscriber.amount }}</td>
+            <th>المتبقي</th>
+            <td>{{ subscriber.remaining }}</td>
+        </tr>
+        <tr>
+            <th>تاريخ الانتهاء</th>
+            <td>{{ subscriber.expiration_date }}</td>
+        </tr>
+    </table>
+    <div class="d-flex justify-content-around">
+        <a href="{% url 'print_form' subscriber_id %}" class="btn btn-success">الاستمارة</a>
+        <a href="https://wa.me/+966{{ subscriber.phone }}" class="btn btn-success">واتساب</a>
+        {% if subscriber.id_document_url %}
+        <a href="{{ subscriber.id_document_url }}" class="btn btn-primary">البطاقة</a>
+        {% else %}
+        <a href="#" class="btn btn-primary disabled">البطاقة غير متوفرة</a>
+        {% endif %}
+        <a href="#" class="btn btn-info">الشهادة</a>
+        <a href="#" class="btn btn-danger">المالية</a>
+    </div>
+</div>
+{% endblock %}
